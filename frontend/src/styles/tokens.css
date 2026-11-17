@@ -1,0 +1,102 @@
+:root {
+  --shell: #0b1f3a;
+  --platform: #e8ecf0;
+  --panel: #f7f8fa;
+  --seam: #c5ccd6;
+  --hairline: #d5dbe3;
+  --ink: #0b1f3a;
+  --ink-muted: rgba(11, 31, 58, 0.65);
+  --amber: #f5a623;
+  --crimson: #c62828;
+  --leaf: #1b7f5a;
+  --field-border: #b8c0cc;
+  --select-tint: #fff7e8;
+  --font-ui: 'IBM Plex Sans Condensed', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --header-h: 56px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  background: var(--platform);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.35);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* 浏览器面：滚动条跟站台调色板 */
+html {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #8a96a5 #d5dbe3;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #8a96a5 #d5dbe3;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #d5dbe3;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #8a96a5;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--shell);
+}
+
+input,
+select,
+button,
+textarea {
+  font: inherit;
+  caret-color: var(--shell);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  font-weight: 600;
+}
+
+.up {
+  color: var(--crimson);
+}
+
+.dn {
+  color: var(--leaf);
+}

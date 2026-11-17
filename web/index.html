@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>大A 指数虚拟盘 — 线路运营台</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1440px;height:900px;overflow:hidden;background:#E8ECF0;color:#0B1F3A;
+    font-family:"IBM Plex Sans Condensed",system-ui,sans-serif}
+  header{display:flex;align-items:center;gap:20px;height:56px;padding:0 24px;background:#0B1F3A;color:#E8ECF0}
+  .brand{font-size:22px;font-weight:600;letter-spacing:.02em}
+  .svc{display:flex;align-items:center;gap:8px;font-size:14px}
+  .lamp{width:10px;height:10px;border-radius:50%;background:#F5A623;box-shadow:0 0 0 2px rgba(245,166,35,.35)}
+  .badge{margin-left:auto;font-size:12px;opacity:.85}
+  main{display:grid;grid-template-columns:1.4fr .9fr .85fr;gap:1px;height:844px;background:#C5CCD6}
+  section{background:#F7F8FA;padding:18px 20px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;opacity:.65;margin-bottom:12px}
+  .line{display:grid;grid-template-columns:8px 1fr auto auto auto;align-items:center;gap:12px;
+    padding:12px 10px;border-bottom:1px solid #D5DBE3;cursor:default}
+  .line.active{background:#FFF7E8;outline:2px solid #F5A623;outline-offset:-2px}
+  .swatch{height:28px;border-radius:2px}
+  .name{font-size:18px;font-weight:600}
+  .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:16px;font-weight:600}
+  .up{color:#C62828}.dn{color:#1B7F5A}
+  label{display:block;font-size:12px;opacity:.6;margin:10px 0 4px}
+  input,select{width:100%;height:40px;border:1px solid #B8C0CC;border-radius:4px;padding:0 10px;font-size:15px;background:#fff}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .buy{margin-top:18px;height:44px;width:100%;border:0;border-radius:4px;background:#0B1F3A;color:#fff;font-size:16px;font-weight:600}
+  .sell{margin-top:28px;height:44px;width:100%;border:1px solid #C62828;border-radius:4px;background:transparent;color:#C62828;font-size:16px;font-weight:600}
+  .stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #D5DBE3;font-size:15px}
+  .stat b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  .note{margin-top:16px;font-size:12px;line-height:1.4;opacity:.7}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">大A 指数虚拟盘</div>
+  <div class="svc"><span class="lamp"></span>运营状态 · 行情降级 · 报价年龄 14s</div>
+  <div class="badge">仅本地模拟 · 非投资建议</div>
+</header>
+<main>
+  <section>
+    <h2>线路报价</h2>
+    <div class="line active"><div class="swatch" style="background:#E53935"></div><div class="name">上证综指</div><div class="mono">3680.64</div><div class="mono up">+0.82%</div><div class="mono">灯·降级</div></div>
+    <div class="line"><div class="swatch" style="background:#1E88E5"></div><div class="name">深证成指</div><div class="mono">11240.18</div><div class="mono dn">−0.31%</div><div class="mono">灯·正常</div></div>
+    <div class="line"><div class="swatch" style="background:#43A047"></div><div class="name">沪深300</div><div class="mono">3982.55</div><div class="mono up">+0.44%</div><div class="mono">灯·正常</div></div>
+    <div class="line"><div class="swatch" style="background:#FB8C00"></div><div class="name">创业板指</div><div class="mono">2145.90</div><div class="mono up">+1.12%</div><div class="mono">灯·正常</div></div>
+    <div class="line"><div class="swatch" style="background:#8E24AA"></div><div class="name">科创50</div><div class="mono">986.21</div><div class="mono dn">−0.58%</div><div class="mono">灯·正常</div></div>
+  </section>
+  <section>
+    <h2>下单 · 上证综指</h2>
+    <div class="row"><div><label>方向</label><select><option>买入</option><option>卖出</option></select></div>
+    <div><label>数量（手=100）</label><input value="100"/></div></div>
+    <label>限价</label><input value="3680.00"/>
+    <button class="buy">买入</button>
+    <button class="sell">卖出（隔离）</button>
+    <p class="note">T+1：当日买入可卖=0。指数为虚拟标的，仅规则练习。</p>
+  </section>
+  <section>
+    <h2>账本枢纽</h2>
+    <div class="stat"><span>现金</span><b>982,450.00</b></div>
+    <div class="stat"><span>持仓市值</span><b>36,806.40</b></div>
+    <div class="stat"><span>上证 · 持仓</span><b>100</b></div>
+    <div class="stat"><span>上证 · 可卖</span><b>0</b></div>
+    <div class="stat"><span>累计费用</span><b>48.12</b></div>
+    <p class="note">主成功：下单→成交/拒单→账本可对账。</p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "web/index.html"
+        ],
+        "createdAt": "2026-11-13T08:19:26.317Z",
+        "reason": "Operate 站台：h2/h3 为发丝区段标签，刻意小于线路名与表列数字；方向合同拒绝纪念碑式大字"
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "skills": {
+    "ark-docs-reader": {
+      "source": "arkdocs.tos-cn-beijing.volces.com",
+      "sourceUrl": "https://arkdocs.tos-cn-beijing.volces.com/skills",
+      "sourceType": "well-known",
+      "computedHash": "fed40fb547af2d6944285512b0097ee90cd85d44000501c7151f94f149a7ff7c",
+      "wellKnownDigest": "sha256:be74ceb238fbcc248265dc79cc6aad93daa8a1cb37c4a6d1f518b9e8975a902a"
+    }
+  }
+}

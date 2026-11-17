@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ark 文档检索"
+  short_description: "按目标站点能力读取方舟或 ModelArk 官方文档并保留证据"
+  default_prompt: "使用 $ark-docs-reader 检索并核对与我的问题相关的最新官方文档，给出结论和实际来源。"
