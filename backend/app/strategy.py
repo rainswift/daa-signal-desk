@@ -173,7 +173,15 @@ def run_strategy_round(
     )
     pos_text = (
         "\n".join(
-            f"- {p['symbol']} qty={p['qty']} sellable={p['qty_sellable']} cost={p['cost_basis']}"
+            (
+                f"- {p['symbol']} qty={p['qty']} sellable={p['qty_sellable']} "
+                f"cost={p['cost_basis']}"
+                + (
+                    "（可卖，空仓观望时必须 sell）"
+                    if int(p["qty_sellable"]) >= lot
+                    else "（T+1 不可卖）"
+                )
+            )
             for p in positions
         )
         or "（空仓）"
@@ -243,6 +251,33 @@ def run_strategy_round(
             for s in raw_signals
             if isinstance(s, dict) and str(s.get("side", "")).lower() != "buy"
         ]
+        # 空仓观望/退潮兜底：模型若未出 sell，对可卖持仓自动补清仓卖单
+        covered: set[str] = set()
+        for s in raw_signals:
+            if not isinstance(s, dict):
+                continue
+            if str(s.get("side", "")).lower() != "sell":
+                continue
+            covered.add(str(s.get("symbol", "")).zfill(6)[-6:])
+        for p in positions:
+            sym = str(p["symbol"]).zfill(6)[-6:]
+            sellable = int(p["qty_sellable"])
+            if sellable < lot or sym in covered:
+                continue
+            qty = (sellable // lot) * lot
+            if qty < lot:
+                continue
+            raw_signals.append(
+                {
+                    "symbol": sym,
+                    "side": "sell",
+                    "qty": qty,
+                    "order_type": "market",
+                    "limit": None,
+                    "rationale": "空仓观望/退潮：系统补卖可卖持仓",
+                }
+            )
+            covered.add(sym)
 
     allowed = {i["symbol"]: i for i in instruments}
     accepted_signals: list[dict[str, Any]] = []

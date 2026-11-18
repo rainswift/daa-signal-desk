@@ -6,6 +6,8 @@ import type { StrategyRun } from '../api/client'
 const desk = useDeskStore()
 const selectedId = ref<number | null>(null)
 const busy = ref(false)
+/** ①–⑦ 情绪推演默认折叠，点开再看 */
+const analysisOpen = ref(false)
 
 const schedHint = computed(() => {
   const s = desk.scheduler
@@ -64,6 +66,7 @@ const analysisRows = computed(() => {
 
 function select(r: StrategyRun) {
   selectedId.value = r.id ?? null
+  analysisOpen.value = false
 }
 
 function timeLabel(iso: string) {
@@ -120,12 +123,23 @@ function timeLabel(iso: string) {
           <template v-if="selected.analysis?.mode"> · {{ selected.analysis.mode }}</template>
         </p>
 
-        <dl v-if="analysisRows.length" class="analysis">
-          <div v-for="row in analysisRows" :key="row.label" class="arow">
-            <dt>{{ row.label }}</dt>
-            <dd>{{ row.text }}</dd>
-          </div>
-        </dl>
+        <div v-if="analysisRows.length" class="analysis-wrap">
+          <button
+            type="button"
+            class="analysis-toggle"
+            :aria-expanded="analysisOpen"
+            @click="analysisOpen = !analysisOpen"
+          >
+            {{ analysisOpen ? '收起情绪推演' : '展开情绪推演' }}
+            <span class="chev" aria-hidden="true">{{ analysisOpen ? '▴' : '▾' }}</span>
+          </button>
+          <dl v-show="analysisOpen" class="analysis">
+            <div v-for="row in analysisRows" :key="row.label" class="arow">
+              <dt>{{ row.label }}</dt>
+              <dd>{{ row.text }}</dd>
+            </div>
+          </dl>
+        </div>
 
         <ul v-if="selected.signals.length" class="sigs">
           <li v-for="(s, i) in selected.signals" :key="`${s.symbol}-${i}`">
@@ -338,14 +352,43 @@ h3 {
   font-size: 12px;
 }
 
+.analysis-wrap {
+  margin: 6px 0 4px;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.analysis-toggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 8px 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.analysis-toggle:hover {
+  color: var(--ink);
+}
+
+.chev {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
 .analysis {
-  margin: 10px 0 4px;
+  margin: 0 0 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 0;
-  border-top: 1px solid var(--hairline);
-  border-bottom: 1px solid var(--hairline);
+  padding: 0 0 8px;
 }
 
 .arow {

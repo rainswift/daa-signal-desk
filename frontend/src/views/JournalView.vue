@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useDeskStore } from '../stores/desk'
 import { useJournalStore } from '../stores/journal'
 
 const journal = useJournalStore()
 const desk = useDeskStore()
+/** ①–⑦ 情绪推演默认折叠 */
+const analysisOpen = ref(false)
+
+watch(
+  () => journal.selectedId,
+  () => {
+    analysisOpen.value = false
+  },
+)
 
 onMounted(async () => {
   if (!desk.desks.length) {
@@ -124,15 +133,23 @@ function skipReason(sk: Record<string, unknown>) {
             {{ journal.selected.filled_count }} / 拒单 {{ journal.selected.rejected_count }}
           </p>
 
-          <template v-if="selectedAnalysisRows.length">
-            <h3>情绪推演</h3>
-            <dl class="analysis">
+          <div v-if="selectedAnalysisRows.length" class="analysis-wrap">
+            <button
+              type="button"
+              class="analysis-toggle"
+              :aria-expanded="analysisOpen"
+              @click="analysisOpen = !analysisOpen"
+            >
+              {{ analysisOpen ? '收起情绪推演' : '展开情绪推演' }}
+              <span class="chev" aria-hidden="true">{{ analysisOpen ? '▴' : '▾' }}</span>
+            </button>
+            <dl v-show="analysisOpen" class="analysis">
               <div v-for="row in selectedAnalysisRows" :key="row.label" class="arow">
                 <dt>{{ row.label }}</dt>
                 <dd>{{ row.text }}</dd>
               </div>
             </dl>
-          </template>
+          </div>
 
           <h3>信号</h3>
           <ul v-if="journal.selected.signals.length" class="list">
@@ -393,8 +410,37 @@ h3 {
   -webkit-line-clamp: unset;
 }
 
-.analysis {
+.analysis-wrap {
   margin: 0 0 12px;
+}
+
+.analysis-toggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 0 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.analysis-toggle:hover {
+  color: var(--ink);
+}
+
+.chev {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.analysis {
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
