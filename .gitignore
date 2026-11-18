@@ -32,8 +32,8 @@ yarn-error.log*
 pnpm-debug.log*
 
 # 本地数据与脚本产物
-data/*.db
-data/*.db-*
+# data/*.db
+# data/*.db-*
 scripts/output/
 
 # 编辑器 / OS

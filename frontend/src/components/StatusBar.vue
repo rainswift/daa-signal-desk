@@ -64,32 +64,22 @@ const leaderName = computed(() => {
     </div>
 
     <div v-if="desk.desks.length" class="row-compete" aria-label="双模型收益竞争">
-      <div class="switch" role="tablist" aria-label="策略台">
+      <div class="race" role="tablist" aria-label="策略台">
         <button
           v-for="d in desk.desks"
-          :key="d.id"
+          :key="`race-${d.id}`"
           type="button"
           role="tab"
-          class="tab"
-          :class="{ on: d.id === desk.activeDeskId }"
+          class="racer"
+          :class="[tone(d.pnl_pct), { active: d.id === desk.activeDeskId }]"
           :aria-selected="d.id === desk.activeDeskId"
           @click="desk.selectDesk(d.id)"
-        >
-          {{ d.name }}
-        </button>
-      </div>
-      <div class="race">
-        <div
-          v-for="d in desk.desks"
-          :key="`race-${d.id}`"
-          class="racer"
-          :class="[tone(d.pnl_pct), { lead: d.id === desk.leaderId, active: d.id === desk.activeDeskId }]"
         >
           <span class="r-name">{{ d.name }}</span>
           <span class="r-pct mono">{{ signedPct(d.pnl_pct) }}</span>
           <span class="r-pnl mono">{{ signedMoney(d.pnl_total) }}</span>
           <span class="r-eq mono">权益 {{ d.equity.toLocaleString('zh-CN', { maximumFractionDigits: 0 }) }}</span>
-        </div>
+        </button>
         <p v-if="leaderName" class="lead-note">领先：{{ leaderName }}</p>
         <p v-else class="lead-note">收益持平</p>
       </div>
@@ -168,42 +158,9 @@ const leaderName = computed(() => {
 .row-compete {
   display: flex;
   align-items: stretch;
-  gap: 16px;
   padding: 8px 24px 12px;
   border-top: 1px solid rgba(232, 236, 240, 0.12);
   background: rgba(0, 0, 0, 0.18);
-}
-
-.switch {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-  align-items: center;
-}
-
-.tab {
-  appearance: none;
-  border: 1px solid rgba(232, 236, 240, 0.22);
-  background: transparent;
-  color: rgba(232, 236, 240, 0.78);
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 7px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.tab:hover {
-  color: #fff;
-  border-color: rgba(232, 236, 240, 0.4);
-}
-
-.tab.on {
-  background: var(--select-tint);
-  color: var(--shell);
-  border-color: var(--amber);
-  outline: 1px solid var(--amber);
 }
 
 .race {
@@ -216,6 +173,7 @@ const leaderName = computed(() => {
 }
 
 .racer {
+  appearance: none;
   display: grid;
   grid-template-columns: auto auto auto auto;
   gap: 6px 10px;
@@ -223,16 +181,29 @@ const leaderName = computed(() => {
   padding: 4px 10px;
   border-radius: 4px;
   border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease-out, background-color 160ms ease-out;
+}
+
+.racer:hover {
+  border-color: rgba(232, 236, 240, 0.35);
+  background: rgba(232, 236, 240, 0.08);
+}
+
+.racer:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }
 
 .racer.active {
-  border-color: rgba(232, 236, 240, 0.28);
-  background: rgba(232, 236, 240, 0.06);
-}
-
-.racer.lead {
-  outline: 1px solid var(--amber);
+  border-color: var(--amber);
+  background: rgba(245, 166, 35, 0.12);
+  box-shadow: inset 0 0 0 1px var(--amber);
 }
 
 .r-name {
