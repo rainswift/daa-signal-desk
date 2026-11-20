@@ -70,6 +70,7 @@ class MarketService:
     def start(self) -> None:
         self._sync_universe()
         self._seed_missing()
+        self._fire_tick()
         if self.poll_only_in_session and not in_continuous_auction():
             log.info("market poll deferred: outside continuous auction")
             self._recompute_runtime(True)
@@ -77,6 +78,14 @@ class MarketService:
             self.refresh_once()
         self._thread = threading.Thread(target=self._loop, name="market-poll", daemon=True)
         self._thread.start()
+
+    def _fire_tick(self) -> None:
+        if not self.on_tick:
+            return
+        try:
+            self.on_tick()
+        except Exception:  # noqa: BLE001
+            log.exception("on_tick failed")
 
     def _sync_universe(self) -> None:
         wanted = {i["symbol"] for i in self.indices}
@@ -109,6 +118,8 @@ class MarketService:
     def _loop(self) -> None:
         while not self._stop.wait(self.poll_interval_sec):
             try:
+                # 盘前/收盘后仍跑 tick（T+1 解锁等），不依赖行情拉取
+                self._fire_tick()
                 if self.poll_only_in_session and not in_continuous_auction():
                     # 收盘后不拉公开行情、不计连续失败；仍刷新运行态（非 force 时显示收市）
                     self._recompute_runtime(True)
@@ -124,8 +135,7 @@ class MarketService:
         else:
             ok = self._pull_mock()
         self._recompute_runtime(ok)
-        if self.on_tick:
-            self.on_tick()
+        self._fire_tick()
 
     def _pull_mock(self) -> bool:
         ts = now_cn()

@@ -17,6 +17,7 @@ from .ledger import (
     ensure_desks,
     get_account,
     get_positions,
+    maybe_unlock_t1,
     reset_account,
     reset_all_accounts,
     unlock_t1,
@@ -105,6 +106,13 @@ cfg = {
 DESK_IDS = desk_ids(cfg)
 ensure_desks(db, float(cfg["initial_cash"]), DESK_IDS)
 
+
+def _on_market_tick() -> None:
+    result = maybe_unlock_t1(db)
+    if result.get("unlocked"):
+        log.info("T+1 auto-unlock trade_date=%s", result.get("trade_date"))
+
+
 market = MarketService(
     db,
     INSTRUMENTS,
@@ -116,6 +124,7 @@ market = MarketService(
     source=str(cfg.get("market_source", "mock")),
     quote_kind=str(cfg.get("trading_universe", "stocks")),
     poll_only_in_session=bool(cfg.get("poll_only_in_session", True)),
+    on_tick=_on_market_tick,
 )
 engine = MatchingEngine(db, market, cfg)
 
@@ -340,6 +349,7 @@ def account_reset(desk_id: Optional[str] = Query(None)) -> AccountOut:
 
 @app.post("/api/dev/unlock-t1")
 def dev_unlock_t1(desk_id: Optional[str] = Query(None)) -> dict[str, str]:
+    """手动强制解锁（调试用）；日常由交易日 09:30 自动解锁。"""
     if desk_id:
         unlock_t1(db, _resolve_desk_or_404(desk_id))
     else:

@@ -3,10 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from .calendar import now_cn
+from .calendar import now_cn, t1_unlock_due, trade_date_key
 from .db import Database
 
 DEFAULT_DESK_ID = "deepseek"
+META_T1_UNLOCKED_TRADE_DATE = "t1_unlocked_trade_date"
 
 
 def _iso(dt: datetime | None = None) -> str:
@@ -194,9 +195,37 @@ def apply_fill(
 
 
 def unlock_t1(db: Database, desk_id: str | None = None) -> None:
-    """MVP：force_session 下把持仓可卖=持仓量（演示用）。"""
+    """将持仓可卖数量对齐为持仓量（当日买入的份额在下次加仓前仍靠「买入不增可卖」约束）。"""
     if desk_id is None:
         db.execute("UPDATE positions SET qty_sellable = qty")
     else:
         db.execute("UPDATE positions SET qty_sellable = qty WHERE desk_id = ?", (desk_id,))
     db.commit()
+
+
+def maybe_unlock_t1(db: Database, now: datetime | None = None) -> dict[str, Any]:
+    """
+    每个交易日 ≥09:30 自动解锁一次：qty_sellable = qty。
+    幂等：同一 trade_date 只执行一次；周末/09:30 前跳过。
+    """
+    now = now or now_cn()
+    if not t1_unlock_due(now):
+        return {"unlocked": False, "reason": "not_due"}
+    trade_date = trade_date_key(now)
+    row = db.fetchone(
+        "SELECT value FROM meta WHERE key = ?",
+        (META_T1_UNLOCKED_TRADE_DATE,),
+    )
+    if row is not None and str(row["value"]) == trade_date:
+        return {"unlocked": False, "reason": "already", "trade_date": trade_date}
+
+    unlock_t1(db)
+    db.execute(
+        """
+        INSERT INTO meta (key, value) VALUES (?, ?)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        """,
+        (META_T1_UNLOCKED_TRADE_DATE, trade_date),
+    )
+    db.commit()
+    return {"unlocked": True, "reason": "ok", "trade_date": trade_date}
